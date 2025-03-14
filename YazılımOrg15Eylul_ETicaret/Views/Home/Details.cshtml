@@ -1,0 +1,538 @@
+﻿@using YazılımOrg15Eylul_ETicaret.Data
+@using YazılımOrg15Eylul_ETicaret.ViewModels
+@model MainPageModel
+@inject IHttpContextAccessor Accessor
+@{
+    Layout = "~/Views/Shared/_DefaultLayout.cshtml";
+    Yazilima15EylulETicaretContext context = new();
+    var usermail = Accessor.HttpContext.Session.GetString("Email");
+    decimal? indirim = 0;
+    decimal? fiyat = 0;
+    decimal urunOrtalamaPuan = Model.ProductDetails!.OrtlamaPuan;
+}
+
+
+<!-- breadcrumb area start  -->
+<div id="sp-breadcrumb-wrapper">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12 col-md-12" id="sp-breadcrumb">
+                <div class="sp-column ">
+                    <div class="sp-module ">
+                        <div class="sp-module-content">
+                            <ul class="breadcrumb">
+                                <li><i class="fa fa-home"></i></li>
+                                <li class="active">@Model.CategoryName</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- breadcrumb area End  -->
+<!-- Single product area start  -->
+<div class="shop-wrapper">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-3 col-md-3 col-lg-3">
+                <div class="shop-by">
+                    <h3>Shop By</h3>
+                </div>
+                <div class="all-shop-cat">
+                    <form action="/Home/DpProducts" method="post">
+                        <div class="single-shop-cat" style="border-color:black;">
+
+                            @{
+                                List<SelectListItem> categories = new();
+                                foreach (var item in ViewBag.Categories as List<Category>)
+                                {
+                                    SelectListItem category = new();
+
+                                    category.Text = item.CategoryName;
+                                    category.Value = item.CategoryID.ToString();
+
+                                    categories.Add(category);
+
+
+                                }
+                            }
+
+
+
+                            <h3>
+                                <span style="background-color:black;color:white;">
+                                    KATEGORİ SEÇİNİZ
+                                </span>
+                                @Html.DropDownList("CategoryID", new SelectList(categories, "Value", "Text"))
+                            </h3>
+
+
+                            <hr />
+
+
+
+
+
+
+                            <h3 class="manufacturers">
+                                <span style="background-color:black;color:white;">
+                                    Marka seçiniz
+                                </span>
+                            </h3>
+
+                            <ul>
+                                @foreach (var item in ViewBag.Suppliers as List<Supplier>)
+                                {
+                                    <li>
+                                        <div class="chack-boutton">
+                                            <input type="checkbox" name="SupplierID" value="@item.SupplierID">
+                                        </div>
+                                        <a href="/Home/SupplierPage/@item.SupplierID">
+                                            @item.BrandName
+                                        </a>
+                                        <span>
+                                            @{
+                                                int ProductCount = context
+                                                .Products.Where(p => p.SupplierID == item.SupplierID && p.Active)
+                                                .Count();
+
+                                                @ProductCount <span>&nbsp; Adet</span>
+
+                                            }
+                                        </span>
+                                    </li>
+                                }
+                            </ul>
+                            <br />
+                            <br />
+
+                            <div class="single-shop-cat" style="border-color:black;">
+                                @Html.RadioButton("isInStock", "1", new { Value = "1", @checked = true })
+                                @Html.Label("Stokta Olanlar")
+                                &nbsp;&nbsp;&nbsp;
+                                @Html.RadioButton("isInStock", "0", new { Value = "0" })
+                                @Html.Label("Hepsi")
+                            </div>
+                            <br />
+                            <br />
+
+                            <div class="single-shop-cat" style="border-color:black;">
+                                Fiyat Aralığı Seçiniz
+                                <div class="price_filter">
+                                    <div id="slider-range"></div>
+                                    <div class="price_slider_amount">
+                                        <p>
+                                            <input type="text" id="amount" name="price" placeholder="Add Your Price" />
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+
+
+                            <div class="single-shop-cat" style="border-color:black;">
+                                <div class="price_filter">
+                                    <div class="price_slider_amount">
+                                        <input class=" btn btn-primary" type="submit" style="border-radius:5px;  " value="ARA" />
+                                    </div>
+                                </div>
+                            </div>
+
+
+
+
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="col-sm-9 col-md-9 col-lg-9">
+                <div class="back-to-category">
+                    Şu Kategoride:
+                    <a title=" @Model.CategoryName Kategorisine gitmek için tıklayın" class="product-details" href="/Home/CategoryPage/@Model.ProductDetails?.CategoryID">
+                        @Model.CategoryName
+                    </a>
+                </div>
+                <div class="clear"></div>
+                <div class="row">
+                    <div class="col-sm-12 col-md-5 col-lg-5">
+                        <div class="product-view">
+                            <div class="full-product-img">
+                                <div class="tab-content">
+                                    <div id="home" class="tab-pane fade in active">
+                                        <img class="zoom_01" src='/resimler/@Model.ProductDetails?.PhotoPath' data-zoom-image="/resimler/@Model.ProductDetails?.PhotoPath" alt="" />
+                                    </div>
+
+                                    <div id="menu1" class="tab-pane fade">
+                                        <img class="zoom_01" src='/resimler/@Model.ProductDetails?.PhotoPath' data-zoom-image="/resimler/@Model.ProductDetails?.PhotoPath" alt="" />
+                                    </div>
+                                    <div id="menu2" class="tab-pane fade">
+                                        <img class="zoom_01" src='/resimler/@Model.ProductDetails?.PhotoPath' data-zoom-image="/resimler/@Model.ProductDetails?.PhotoPath" alt="" />
+                                    </div>
+                                    <div id="menu3" class="tab-pane fade">
+                                        <img class="zoom_01" src='/resimler/@Model.ProductDetails?.PhotoPath' data-zoom-image="/resimler/@Model.ProductDetails?.PhotoPath" alt="" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="small-products">
+                                <ul class="nav nav-tabs">
+                                    <li class="active">
+                                        <a data-toggle="tab" href="single-product.html#home">
+                                            <img src="~/resimler/@Model.ProductDetails?.PhotoPath" alt="">
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a data-toggle="tab" href="single-product.html#menu1">
+                                            <img src="~/resimler/@Model.ProductDetails?.PhotoPath" alt="">
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a data-toggle="tab" href="single-product.html#menu2">
+                                            <img src="~/resimler/@Model.ProductDetails?.PhotoPath" alt="">
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a data-toggle="tab" href="single-product.html#menu3">
+                                            <img src="~/resimler/@Model.ProductDetails?.PhotoPath" alt="">
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-12 col-md-7 col-lg-7">
+                        <div class="single-product-info sp-info-area">
+                            <div class="product-name">
+                                <h1>
+                                    @Model.ProductDetails?.ProductName
+                                </h1>
+                            </div>
+                            <div class="product-rating">
+                                <div title="Puan: @urunOrtalamaPuan" class="ratingbox">
+
+                                    <div class="stars-orange" style="width:@((urunOrtalamaPuan*13).ToString(System.Globalization.CultureInfo.InvariantCulture))px">
+                                    </div>
+                                </div>
+                                @if (Model.Comments.Count > 0)
+                                {
+                                    <span class="amount">
+                                        @Model.Comments.Count Yorum
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="amount">
+                                        Henüz Yorum yapılmadı
+                                    </span>
+                                }
+
+                                <p class="in-stock">
+
+                                    Stok:
+                                    @if (Model.ProductDetails?.Stock > 0)
+                                    {
+                                        <span>Mevcut</span>
+                                    }
+                                    else
+                                    {
+                                        <span>Kalmadı</span>
+                                    }
+
+
+                                </p>
+                            </div>
+                            <div class="all-prices">
+                                <span class="sp-price price-lessprice">
+                                    @string.Format("{0:#,##0,00}", Model.ProductDetails?.UnitPrice) TL
+                                </span>
+                                <span class="sp-price main-price">
+
+                                    @{
+                                        fiyat = Model.ProductDetails?.UnitPrice;
+                                        indirim = fiyat * Model.ProductDetails?.Discount / 100;
+                                        fiyat = fiyat - indirim;
+
+                                    }
+
+                                    @string.Format("{0:#,##0,00}", @fiyat) TL;
+                                    <small>(Kazancınız @string.Format("{0:#,##0.00}", indirim) TL)</small>
+
+
+
+                                </span>
+                                <p class="sku">
+                                    Marka:
+                                    <a href="/Home/SupplierPage/@Model.ProductDetails?.SupplierID">
+                                        <span class="color">
+                                            @Model.BrandName
+                                        </span>
+
+                                    </a>
+                                </p>
+                            </div>
+                            <div class="singl-share">
+                                <a href="single-product.html#"><img src="~/img/single-share.png" alt=""></a>
+                            </div>
+                            <div class="product-short-description">
+                                @Model.ProductDetails!.Keywords
+                            </div>
+                            <div class="single-icons">
+                                <ul>
+                                    <li><a data-toggle="tooltip" data-placement="top" title="Add Favorite" class="black-tooltip" href="single-product.html#"><i class="fa fa-heart"></i> </a></li>
+                                    <li><a data-toggle="tooltip" data-placement="top" title="Add to compare" class="black-tooltip" href="single-product.html#"><i class="fa fa-refresh"></i></a></li>
+                                    <li><a data-toggle="tooltip" data-placement="top" title="Print" class="black-tooltip" href="single-product.html#"><i class="fa fa-print"></i></a></li>
+                                    <li><a data-toggle="tooltip" data-placement="top" title="Email" class="black-tooltip" href="single-product.html#"><i class="fa fa-envelope-o"></i></a></li>
+                                </ul>
+                            </div>
+                            <div class="product-quantity">
+                                <div class="numbers-row">
+                                    <input type="text" value="2" name="#">
+                                </div>
+                                <div class="s-poraduct-botton">
+                                    <input type="submit" value="Add to Cart">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="clear"></div>
+                    <div class="col-sm-12 col-md-12 col-lg-12">
+                        <div class="reviews-areas">
+                            <div class="reviw-title">
+                                <ul class="nav nav-tabs">
+                                    <li class="active"><a data-toggle="tab" href="single-product.html#description">Detaylı Açıklama</a></li>
+                                    <li><a data-toggle="tab" href="single-product.html#review">Yorumlar</a></li>
+                                    <li><a data-toggle="tab" href="single-product.html#infomation">Ürün Özellikleri</a></li>
+                                </ul>
+                            </div>
+                            <div class="revew-content-area">
+                                <div class="tab-content">
+                                    <div id="description" class="tab-pane fade in active">
+
+                                        <p>@Model.ProductDetails!.Notes</p>
+
+                                    </div>
+                                    <div id="review" class="tab-pane fade">
+
+                                        <div class="customer-reviews">
+
+
+
+                                            <div class="list-reviews">
+
+
+
+
+                                                @if (Model.Comments.Count == 0)
+                                                {
+                                                    <h3 class="title-list-reviews">Henüz Yorum Yapılmamış</h3>
+                                                }
+                                                else
+                                                {
+
+                                                    foreach (var item in Model.Comments)
+                                                    {
+                                                        <div class="review-item normal">
+
+                                                            @{
+                                                                string? gizlikullanici = "";
+                                                                string? kullanici = context.Users
+                                                                .FirstOrDefault(u => u.UserID == item.UserID)?
+                                                                .NameSurname;
+                                                                string[]? adsoyad = kullanici?.Split(" ");
+
+                                                                for (int i = 0; i < adsoyad?.Length; i++)
+                                                                {
+                                                                    gizlikullanici += adsoyad[i].Substring(0, 1) + "**** ";
+                                                                }
+                                                            }
+
+                                                            <b class="author">@gizlikullanici</b>
+
+                                                            @{
+                                                                int yorumPuanı = item.Puan;
+                                                            }
+
+                                                            <span class="vote">
+
+                                                                <span style="display:inline-block;width:70px;" class="vmicon ratingbox" title="Puan: @yorumPuanı /5">
+                                                                    <span style="width:@((urunOrtalamaPuan*13).ToString(System.Globalization.CultureInfo.InvariantCulture))px" class="stars-orange"></span>
+                                                                </span>
+
+                                                            </span>
+
+
+                                                            <span class="date">
+                                                                @item.AddDate.ToString("dd MMMM yyyy, dddd")
+                                                            </span>
+
+                                                            <p class="info">
+                                                                @item.Review
+                                                            </p>
+
+                                                        </div>
+                                                        <div class="clear"></div>
+                                                    }
+
+
+
+                                                }
+
+                                                @if (usermail == null)
+                                                {
+                                                    <h3 class="title-list-reviews">Yorum Yapmak için <a href="/Home/Login">Giriş</a> yapın</h3>
+                                                }
+                                                else
+                                                {
+                                                    <div class="bt-info" style="border-color:black;">
+                                                        <h3 class="proopc-process-title">Yorum Bırakabilirsiniz</h3>
+                                                        <div class="chek-full-info">
+                                                            <div class="inner-wrap">
+                                                                <div class="edit-address">
+                                                                    <form action="@Url.Action("YorumYap","Home")" method="post">
+                                                                        <div>
+                                                                            <div class="inner">
+                                                                                <label class="email">@usermail</label>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div>
+                                                                            <label for:"rating">Puanınızı Seçin:</label>
+                                                                            <select name="point" class="form-control">
+                                                                                <option value="1">1</option>
+                                                                                <option value="2">2</option>
+                                                                                <option value="3">3</option>
+                                                                                <option value="4">4</option>
+                                                                                <option value="5">5</option>
+                                                                            </select>
+                                                                        </div>
+                                                                        <div>
+                                                                            <div class="inner">
+                                                                                <label class="email">Yorumunuz:</label>
+                                                                                <textarea typeof="text" name="review" cols="80" rows="4"></textarea>
+                                                                            </div>
+                                                                        </div>
+                                                                        <input type="hidden" value="@usermail" name="userMail" />
+                                                                        <input type="hidden" value="@Model.ProductDetails.ProductID" name="productId" />
+                                                                        <div class="submit_crt">
+                                                                            <input type="submit" value="Yorum Yap" class="update_cart" />
+                                                                        </div>
+                                                                    </form>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                }
+
+
+
+
+                                            </div>
+
+                                        </div>
+
+                                    </div>
+                                    <div id="infomation" class="tab-pane fade">
+                                        <div class="product-infomation">
+                                            <ul class="list-info">
+                                                <li><strong>Weight</strong> 10.00 KG</li>
+                                                <li><strong>Length</strong> 10.00 M</li>
+                                                <li><strong>Width</strong> 5.00</li>
+                                                <li><strong>Height</strong> 5.00</li>
+                                                <li><strong>Packaging</strong> 5.00 KG</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="rp-area">
+                            <div class="all-p-title">
+                                <h3>Benzer Ürünler</h3>
+                            </div>
+                            <div class="singl-shop ">
+                                <div class="row">
+
+                                    @foreach (var item in Model.RelatedProducts!)
+                                    {
+                                        <!-- SP-SINGLE Product -->
+                                        <div class="col-sm-6 col-md-3 col-lg-3">
+
+                                            <div class="sp-single">
+
+                                                <div class="sp-img-area">
+                                                    <img alt="" src="~/resimler/@item.PhotoPath" class="first-img" style="height:150px;">
+                                                    <img alt="" src="~/resimler/@item.PhotoPath" class="hover-img" style="height:150px;">
+                                                    <div class="quick-view-detail">
+                                                        <a href="/Home/Details/@item.ProductID">Detaylar</a>
+                                                    </div>
+                                                    <div class="sp-label-pro sp-label-pro-hot" style="background-color:#7A73D1">Benzer!</div>
+                                                </div>
+
+                                                <div class="sp-info-area">
+
+                                                    <h2 class="product-name"><a href="/Home/Details/@item.ProductID" title="@item.ProductName ürünün detayı için tıklayın">@item.ProductName </a></h2>
+
+                                                    @{
+                                                        decimal benzerPuan = item.OrtlamaPuan;
+                                                    }
+                                                    <div class="product-rating">
+                                                        <div title="puan: @benzerPuan" class="ratingbox">
+                                                            <div class="stars-orange" style="width:@((benzerPuan*13).ToString(System.Globalization.CultureInfo.InvariantCulture))px"></div>
+                                                        </div>
+                                                    </div>
+
+                                                    <p class="all-prices">
+                                                        <span class="sp-price main-price">@string.Format("{0:#,##0.00}", @item.UnitPrice) TL</span>
+                                                    </p>
+
+                                                    <div class="sp-button">
+
+                                                        <div class="s-button">
+                                                            <a data-product-id="@item.ProductID" class="black-tooltip add-to-cart all_src_icon" title="" data-placement="top" data-toggle="tooltip" data-original-title="Sepete ekle">
+                                                                <i class="fa fa-shopping-cart"></i>
+                                                            </a>
+                                                        </div>
+
+                                                        <div class="s-button">
+                                                            <a class="black-tooltip add-to-cart all_src_icon" title="" data-placement="top" data-toggle="tooltip" href="#" data-original-title="">
+                                                            </a>
+                                                        </div>
+
+                                                        <div class="s-button last-b ">
+                                                            <a class="black-tooltip add-to-cart all_src_icon" title="" data-placement="top" data-toggle="tooltip" href="/Home/Details/@item.ProductID" data-original-title="Detaylar"> <i class="fa fa-eye"></i> </a>
+                                                        </div>
+
+                                                    </div>
+
+                                                </div>
+                                            </div>
+                                        </div>
+                                    }
+
+
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--Single product area End  -->
+<!-- footer bannar area Start  -->
+<div class="container">
+    <div class="row">
+        <div class="col-sm-12 col-md-12 col-lg-12">
+            <div class="new-bottom-area helth-bottom">
+                <!-- bannar-1 -->
+                <div class="banner-home-inner">
+                    <a href="single-product.html#">
+                        <img src="~/img/all-bannars/2.jpg" alt="">
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- footer bannar area end  -->

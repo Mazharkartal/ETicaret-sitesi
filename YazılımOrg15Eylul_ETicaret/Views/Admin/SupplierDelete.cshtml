@@ -1,0 +1,44 @@
+﻿@model Supplier
+@{
+    ViewData["Title"] = "Marka Sil";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="row">
+    <div class="col-md-2"></div>
+    <div class="col-md-8">
+        <!-- BEGIN SAMPLE TABLE PORTLET-->
+        <div class="portlet box red">
+            <div class="portlet-body">
+                <div class="table-scrollable">
+                    <table class="table table-hover table-dark">
+                        <thead>
+                            <tr style="background-color:gray; color:white">
+                                <th>
+                                    @Html.DisplayFor(model => model.SupplierID)
+                                </th>
+                                <th>
+                                    @Html.DisplayFor(model => model.BrandName)
+                                </th>
+
+
+                                <th>
+                                    @Html.DisplayFor(model => model.Active)
+                                </th>
+                            </tr>
+                        </thead>
+
+                    </table>
+
+                    <form asp-action="SupplierDelete" method="post">
+                        <input type="hidden" asp-for="SupplierID" />
+                        <input type="submit" value="SİL" class="btn btn-danger" onclick="return confirm('Silmek istediğinize eminmisiniz??')" />
+                        <a asp-action="SupplierIndex" class="btn btn-success">Marka LİSTESİ</a>
+                    </form>
+
+                </div>
+            </div>
+        </div>
+        <!-- END SAMPLE TABLE PORTLET-->
+    </div>
+</div>

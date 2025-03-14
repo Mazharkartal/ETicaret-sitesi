@@ -1,0 +1,121 @@
+﻿@using YazılımOrg15Eylul_ETicaret.Data
+@using YazılımOrg15Eylul_ETicaret.ViewModels
+@model MainPageModel
+@{
+	Layout = "~/Views/Shared/_DefaultLayout.cshtml";
+}
+
+
+<!-- Single product area start  -->
+<div class="shop-wrapper">
+	<div class="container">
+		<div class="row">
+			<div class="col-sm-12 col-md-12 col-lg-12">
+				<div class="row">
+					<div class="col-sm-12 col-md-12 col-lg-12">
+						<div class="rp-area">
+							<div class="singl-shop ">
+								<div class="row">
+									<div id="products">
+										@foreach (var item in Model.SpecialProducts)
+										{
+												<!-- SP-SINGLE Product -->
+												<div class="col-sm-6 col-md-3 col-lg-3">
+													<div class="sp-single">
+														<div class="sp-img-area">
+															<img class="first-img" src="~/resimler/@item.PhotoPath" alt="" style="height:200px;" />
+															<img class="hover-img" src="~/resimler/@item.PhotoPath" alt="" style="height:200px;" />
+															<div class="quick-view-detail">
+																<a href="/Home/Details/@item.ProductID">Detaylar</a>
+															</div>
+														<div class="sp-label-pro sp-label-pro-hot" style="background-color:#576CBC; color:white;">ÖZEL!</div>
+														</div>
+														<div class="sp-info-area">
+															<h2 class="product-name"><a title="@item.ProductName Ürününün Detayı İçin Tıklayın" href=" /Home/Details/@item.ProductID">@item.ProductName </a></h2>
+															<div class="product-rating">
+																<div class="ratingbox" title="" Rating="3/5">
+																	<div style="width:50px" class="stars-orange"></div>
+																</div>
+															</div>
+															<p class="all-prices">
+																<span class="sp-price main-price">@string.Format("{0:#,##0,00}", item.UnitPrice) TL</span>
+															</p>
+															<div class="sp-button">
+
+																<div class="s-button">
+																<a data-product-id="@item.ProductID" data-toggle="tooltip" data-placement="top" title="Sepete ekle" class="black-tooltip add-to-cart all_src_icon"> <i class="fa fa-shopping-cart"></i> </a>
+																</div>
+
+																<div class="s-button">
+																	<a href="" data-toggle="tooltip" data-placement="top" class="black-tooltip add-to-cart all_src_icon"> </a>
+																</div>
+
+																<div class="s-button last-b ">
+																	<a href="/Home/Details/@item.ProductID" data-toggle="tooltip" data-placement="top" title="Detaylar" class="black-tooltip add-to-cart all_src_icon"> <i class="fa fa-eye"></i> </a>
+																</div>
+
+															</div>
+														</div>
+													</div>
+												</div>
+										}
+									</div>
+
+
+
+									<div id="LoadMoreProducts">
+										<div class="s-poraduct-botton">
+											<input type="submit" value="DAHA FAZLA ÜRÜN" />
+										</div>
+									</div>
+									&nbsp; &nbsp; &nbsp; <input type="hidden" id="pagenumber" value="0" />
+
+									@{
+										Yazilima15EylulETicaretContext context = new();
+										int count = context.Products.Where(p => p.Active && p.StatusID == 2).Count();
+									}
+
+									&nbsp; &nbsp; &nbsp; <input type="hidden" id="count" value="@count" />
+
+
+
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<!--Single product area End  -->
+@section Scripts {
+		<script>
+			$(document).on("click","#LoadMoreProducts", function() {
+				//alert("tuşa basıldı")
+				var pagenumber = parseInt($("#pagenumber").val());
+				var mynextpagenumber = pagenumber + 1;
+
+				var count = parseInt($("#count").val());
+	         	var listelenenUrunSayisi = (mynextpagenumber + 1 ) * 4;
+
+	         	if ( listelenenUrunSayisi >= count ) {
+			    $("#LoadMoreProducts").css("display", "none");
+		        }
+
+
+				   $.ajax({
+				    	type: "GET",
+			    	url:"/Home/_PartialSpecialProducts",
+					data: { nextpagenumber: mynextpagenumber },
+					async: true,
+					cache: true,
+					success: function(result) {
+						//alert(result);
+						$("#products").append(result);
+						$("#pagenumber").val(+mynextpagenumber);
+					}
+				});
+			});
+		</script>
+}

@@ -1,0 +1,68 @@
+﻿@using YazılımOrg15Eylul_ETicaret.Data
+@using YazılımOrg15Eylul_ETicaret.ViewModels
+@model IEnumerable<QuickSearchViewModel>
+
+@{
+    int ikat = 0;
+    int imar = 0;
+    int iurun = 0;
+    Yazilima15EylulETicaretContext context = new();
+}
+
+
+    @foreach (var item in Model)
+    {
+        if (item.KATEGORI != 0)
+        {
+            if (ikat == 0)
+            {
+                <li><hr /></li>
+                <li><b>&nbsp; KATEGORİLER</b></li>
+                ikat++;
+            }
+            <li>
+                <a href="/Home/CategoryPage/@item.KATEGORI" class="baby">
+                    <span class="catTitle">&nbsp; &nbsp; @item.ARAMAISMI</span>
+                </a>
+            </li>
+        }
+
+        if (item.MARKA !=0)
+        {
+            string? resim = context.Suppliers.FirstOrDefault(s => s.SupplierID == item.MARKA)?.PhotoPath;
+            if (imar == 0)
+            {
+                <li><hr /></li>
+                <li><b>&nbsp; MARKALAR</b></li>
+                imar++;
+            }
+            <li>
+
+                &nbsp;
+                <img src="~/resimler/@resim" style="height:30px"/>
+                <a href="/Home/SupplierPage/@item.MARKA" class="baby">
+                    <span class="catTitle">&nbsp; @item.ARAMAISMI</span>
+                </a>
+            </li>
+        }
+
+        if (item.URUN != 0)
+        {
+            string? resim = context.Products.FirstOrDefault(p => p.ProductID == item.URUN)?.PhotoPath;
+            if (iurun == 0)
+            {
+                <li><hr /></li>
+                <li><b>&nbsp; ÜRÜNLER</b></li>
+                iurun++;
+            }
+            <li>
+                &nbsp;
+                <img src="~/resimler/@resim" style="height:30px" />
+                <a href="/Home/Details/@item.URUN" class="baby">
+                    <span class="catTitle">&nbsp; &nbsp; @item.ARAMAISMI</span>
+                </a>
+            </li>
+        }
+    }
+    <br />
+

@@ -1,0 +1,39 @@
+﻿@*
+    Sepet Ürün Sayısı
+*@
+
+<style>
+
+ .cart-summary{
+     position: relative;
+ }
+
+    .cart-count{
+        background-color: red;
+        color: white;
+        border-radius : 50%;
+        width: 24px;
+        height: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size : 14px;
+        position:absolute;
+        top:-10px;
+        right:-10px;
+    }
+
+</style>
+<div id="cart-summary-container">
+    @if (Model > 0)
+    {
+        <div class="cart-summary">
+            <div class="cart-count">
+                @Model
+            </div>
+        </div>
+    }
+
+</div>
+
+
